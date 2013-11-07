@@ -61,6 +61,10 @@ if (Meteor.isClient) {
     return Players.find();
   };
 
+  Template.existingplayers.imageUrl = function () {
+    return 'http://www.tagged.com/imgsrv.php?sz=1&uid=';
+  };
+
   Template.profile.playerTags = function () {
     console.log(Players);
     var x = Players.findOne({userId : Session.get('username')}).tags;
@@ -68,6 +72,10 @@ if (Meteor.isClient) {
   };
   Template.profile.isLoggedIn = function() {
     return !Session.equals('username', null);
+  };
+
+  Template.profile.getUser = function() {
+    return Players.findOne({userId : Session.get('username')});
   };
   Template.profile.loading = false;
   /*
@@ -138,12 +146,12 @@ if (Meteor.isClient) {
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
-    console.log(Players.find().count);
+    //onsole.log(Players.find().count);
     if(Players.find().count() == 0) {
-      Players.insert({userId: "user1", tags : ['1', '2']});
-      Players.insert({userId: "user2", tags : ['3']});
-      Players.insert({userId: "user3", tags : ['4']});
-      Players.insert({userId: "user4", tags : []});
+      Players.insert({userId: "5995877324", name: "Rushan", tags : ['1', '2']});
+      Players.insert({userId: "5995985639", name: "Nicolette", tags : ['3']});
+      Players.insert({userId: "5996265657", name: "Jennelle", tags : ['4']});
+      Players.insert({userId: "5995861086", name: "Joe", tags : []});
     }
     if(Tags.find().count() == 0) {
       Tags.insert({ id : '1', count: 0, time: 0, image : null});

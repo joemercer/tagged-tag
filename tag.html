@@ -5,7 +5,6 @@
 <body>
   {{> hello}}
   {{> existingplayers}}
-  {{> profile}}
 </body>
 
 <template name="hello">
@@ -18,9 +17,11 @@
 </template>
 
 <template name="existingplayers">
+    <div>
     {{#each players}}
-      <p>{{userId}}</p>
+      <p>{{name}}</p><img src="{{imageUrl}}{{userId}}" />
     {{/each}}
+    </div>
 </template>
 
 <template name="profile">
@@ -54,3 +55,5 @@
         {{this}}
     {{/each}}
 </template>
+
+
