@@ -23,7 +23,10 @@ if (Meteor.isClient) {
 
   Template.profile.isLoggedIn = function() {
     return !Session.equals('username', null);
-  }
+  };
+  Template.profile.username = function() {
+    return Session.get('username');
+  };
   Template.profile.loading = false;
   Template.profile.tags = function() {
     var user = Session.get('username');
@@ -33,7 +36,7 @@ if (Meteor.isClient) {
         return data.tags;
       }
     }
-  }
+  };
 
 
   // Url routing using the Backbone Router
@@ -44,6 +47,13 @@ if (Meteor.isClient) {
     main: function (username) {
       var oldUser = Session.get('username');
       if (oldUser !== username) {
+        var match = Players.findOne({name:username});
+        if (!match) {
+          Players.insert({
+            name: username,
+            tags: ['one', 'two']
+          });
+        }
         Session.set('username', username);
       }
     },

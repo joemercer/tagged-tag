@@ -22,6 +22,7 @@
 
 <template name="profile">
   {{#if isLoggedIn}}
+  	<h3>Hello {{username}}!</h3>
     <div id="items-view">
       {{#if loading}}
         Loading...
