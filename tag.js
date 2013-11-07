@@ -1,9 +1,6 @@
 Players = new Meteor.Collection("players");
 
 if (Meteor.isClient) {
-  Template.hello.greeting = function () {
-    return "Welcome to tag.";
-  };
 
   Template.hello.events({
     'click #login' : function () {
