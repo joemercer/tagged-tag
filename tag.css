@@ -1,1 +1,6 @@
 /* CSS declarations go here */
+#items-view #friends div.available {
+    background: none;
+    color: #333;
+    border: 1px dashed #999;
+}

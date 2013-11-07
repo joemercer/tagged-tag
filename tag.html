@@ -4,30 +4,37 @@
 
 <body>
   {{> hello}}
-  {{> leaderboard}}
+  {{> existingplayers}}
   {{> profile}}
 </body>
 
 <template name="hello">
   <h1>Tagged!</h1>
-  <br>Name: <input id="login_name" type="text"></br>
-  <input id="login" type="button" value="Log me in!" />
+  {{#if notLoggedIn}}
+      <br>Name: <input id="login_name" type="text"></br>
+      <input id="login" type="button" value="Log me in!" />
+
+  {{/if}}
 </template>
 
-<template name="leaderboard">
+<template name="existingplayers">
     {{#each players}}
-      <p>{{name}}</p>
+      <p>{{userId}}</p>
     {{/each}}
 </template>
 
 <template name="profile">
   {{#if isLoggedIn}}
+    <input id="logout" type="button" value="Logout!" />
     <div id="items-view">
       {{#if loading}}
         Loading...
       {{else}}
+        <div id="friends">
+            {{> friends}}
+        </div>
         <ul id="tag-list">
-          {{#each tags}}
+          {{#each playerTags}}
             {{> tag_item}}
           {{/each}}
         </ul>
@@ -37,5 +44,13 @@
 </template>
 
 <template name="tag_item">
-	<p> HELLO </p>
+    <p>{{this}}</p>
+    <button id="tag" data-name="{{this}}">Pass To</button>
+    <input id="receiver_name" type="text">
+</template>
+
+<template name="friends">
+    {{#each name}}
+        {{this}}
+    {{/each}}
 </template>
