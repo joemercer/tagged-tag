@@ -4,10 +4,17 @@
 
 <body>
   {{> hello}}
+  {{> leaderboard}}
 </body>
 
 <template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
-  <input type="button" value="Click" />
+  <h1>Tagged!</h1>
+  <br>Name: <input id="login_name" type="text"></br>
+  <input id="login" type="button" value="Log me in!" />
+</template>
+
+<template name="leaderboard">
+    {{#each players}}
+      <p>{{name}}</p>
+    {{/each}}
 </template>

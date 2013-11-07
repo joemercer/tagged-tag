@@ -1,15 +1,23 @@
+Players = new Meteor.Collection("players");
+
 if (Meteor.isClient) {
   Template.hello.greeting = function () {
     return "Welcome to tag.";
   };
 
   Template.hello.events({
-    'click input' : function () {
-      // template data, if any, is available in 'this'
-      if (typeof console !== 'undefined')
-        console.log("You pressed the button");
+    'click #login' : function () {
+      var name = $('#login_name').val();
+      var match = Players.findOne({name:name});
+      if (!match) {
+        Players.insert({name:name});
+      }
     }
   });
+
+  Template.leaderboard.players = function () {
+    return Players.find({});
+  };
 }
 
 if (Meteor.isServer) {
