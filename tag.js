@@ -12,12 +12,37 @@ if (Meteor.isClient) {
       if (!match) {
         Players.insert({name:name});
       }
+      Session.set('username', name);
+      Router.setUser(name);
     }
   });
 
   Template.leaderboard.players = function () {
     return Players.find({});
   };
+
+
+  // Url routing using the Backbone Router
+  var TagRouter = Backbone.Router.extend({
+    routes: {
+      ":username": "main"
+    },
+    main: function (username) {
+      var oldUser = Session.get('username');
+      if (oldUser !== username) {
+        Session.set('username', username);
+      }
+    },
+    setUser: function (username) {
+      this.navigate(username, true);
+    }
+  });
+
+  Router = new TagRouter;
+
+  Meteor.startup(function () {
+    Backbone.history.start({pushState: true});
+  });
 }
 
 if (Meteor.isServer) {
