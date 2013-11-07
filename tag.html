@@ -27,6 +27,7 @@
 
 <template name="profile">
   {{#if isLoggedIn}}
+  	<h3>Hello {{username}}!</h3>
     <input id="logout" type="button" value="Logout!" />
     <div id="items-view">
       {{#if loading}}

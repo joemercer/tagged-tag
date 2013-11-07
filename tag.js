@@ -36,9 +36,6 @@ Meteor.methods({
 });
 
 if (Meteor.isClient) {
-  Template.hello.greeting = function () {
-    return "Welcome to tag.";
-  };
 
   Template.hello.events({
     'click #login' : function () {
@@ -67,8 +64,11 @@ if (Meteor.isClient) {
 
   Template.profile.playerTags = function () {
     console.log(Players);
-    var x = Players.findOne({userId : Session.get('username')}).tags;
-    return x; 
+    var user = Players.findOne({userId : Session.get('username')});
+    if (user){
+      return user.tags;
+    }
+    return []; 
   };
   Template.profile.isLoggedIn = function() {
     return !Session.equals('username', null);
@@ -76,6 +76,9 @@ if (Meteor.isClient) {
 
   Template.profile.getUser = function() {
     return Players.findOne({userId : Session.get('username')});
+  };
+  Template.profile.username = function() {
+    return Session.get('username');
   };
   Template.profile.loading = false;
   /*
@@ -116,7 +119,6 @@ if (Meteor.isClient) {
     }
   });
 
-
   // Url routing using the Backbone Router
   var TagRouter = Backbone.Router.extend({
     routes: {
@@ -125,6 +127,10 @@ if (Meteor.isClient) {
     main: function (username) {
       var oldUser = Session.get('username');
       if (oldUser !== username) {
+        var match = Players.findOne({userId:username});
+        if (!match) {
+          Meteor.call("add_player", username);
+        }
         Session.set('username', username);
       }
     },
@@ -139,7 +145,7 @@ if (Meteor.isClient) {
     Backbone.history.start({pushState: true});
     Session.set('username', null);
 
-    // When adding tag to a todo, ID of the todo
+    // When adding tag to a todo, ID of the todo.
     Session.setDefault('passing_tag', 0);
   });
 }
