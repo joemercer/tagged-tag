@@ -5,6 +5,7 @@
 <body>
   {{> hello}}
   {{> leaderboard}}
+  {{> profile}}
 </body>
 
 <template name="hello">
@@ -17,4 +18,24 @@
     {{#each players}}
       <p>{{name}}</p>
     {{/each}}
+</template>
+
+<template name="profile">
+  {{#if isLoggedIn}}
+    <div id="items-view">
+      {{#if loading}}
+        Loading...
+      {{else}}
+        <ul id="tag-list">
+          {{#each tags}}
+            {{> tag_item}}
+          {{/each}}
+        </ul>
+      {{/if}}
+    </div>
+  {{/if}}
+</template>
+
+<template name="tag_item">
+	<p> HELLO </p>
 </template>

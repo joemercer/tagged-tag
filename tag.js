@@ -10,7 +10,10 @@ if (Meteor.isClient) {
       var name = $('#login_name').val();
       var match = Players.findOne({name:name});
       if (!match) {
-        Players.insert({name:name});
+        Players.insert({
+          name: name,
+          tags: ['one', 'two']
+        });
       }
       Session.set('username', name);
       Router.setUser(name);
@@ -20,6 +23,20 @@ if (Meteor.isClient) {
   Template.leaderboard.players = function () {
     return Players.find({});
   };
+
+  Template.profile.isLoggedIn = function() {
+    return !Session.equals('username', null);
+  }
+  Template.profile.loading = false;
+  Template.profile.tags = function() {
+    var user = Session.get('username');
+    if (user){
+      var data = Players.findOne({name:user});
+      if (data) {
+        return data.tags;
+      }
+    }
+  }
 
 
   // Url routing using the Backbone Router
