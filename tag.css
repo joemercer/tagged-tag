@@ -1,15 +1,16 @@
 
 #loggedInSymbol {
 	background-color:grey;
-	height: 80px;
-	width: 80px;
+	height: 120px;
+	width: 120px;
 	padding: 0px;
-	text-align: center;
+	
 }
 
 #loggedInSymbol h1 {
-	font-size: 44px;
-	padding-top: 20px;
+	font-size: 40px;
+	padding-top: 40px;
+	padding-left: 130px;
 }
 
 #login {
