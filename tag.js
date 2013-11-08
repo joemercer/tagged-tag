@@ -21,7 +21,6 @@ if (Meteor.isClient) {
   };
 
   Template.login.loggedIn = function() {
-    console.log('logged in', !!Session.get('loggedInUser'))
     return !!Session.get('loggedInUser');
   };
 
@@ -71,7 +70,6 @@ if (Meteor.isClient) {
       var $target = $(e.target);
       var value = $target.parent().find('input').val();
       if (value === '') return;
-      console.log('added tag with value', value);
 
       var recipientUsername = $target.parents('.active-player').data('username');
       var recipient = Players.findOne({username:recipientUsername});
