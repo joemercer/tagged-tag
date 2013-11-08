@@ -29,12 +29,20 @@
 			</div>
 		</div>
 	{{else}}
-		<h2> Click a color to begin playing
+		<h2>
+			Click a color to begin playing
 			<ul class="login_options inline unstyled">
 				{{#each options}}
 					{{> login_option}}
 				{{/each}}
 			</ul>
+			Or enter your Tagged userID
+			<br>
+			<input id="login-id" type="text" value="Tagged UserID">
+			<input id="login-name" type="text" value="Nickname">
+			<button class="do-login">
+				Login
+			</button>
 		</h2>
   {{/if}}
 </template>
