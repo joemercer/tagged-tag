@@ -105,6 +105,10 @@ if (Meteor.isClient) {
         Tags.insert(newTag);
       }
 
+      // Add the tag to the recipients tags list for tag_breakdown
+      recipient.tags.push(value);
+      Players.update({_id:recipient._id}, recipient);
+
       //reset text
       $target.parent().find('input').val('New tag');
       $target.parents('.tagslist').removeClass('open');
@@ -130,9 +134,11 @@ if (Meteor.isClient) {
       var sender = Players.findOne({username:senderUsername});
 
       sender.score = sender.score + tag.count;
-      sender.tags.push(tagValue);
-
       Players.update({_id:sender._id}, sender);
+
+      // Add the tag to the recipients tags list for tag_breakdown
+      recipient.tags.push(tagValue);
+      Players.update({_id:recipient._id}, recipient);
     }
   });
 
