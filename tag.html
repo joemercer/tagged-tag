@@ -30,7 +30,7 @@
 		</div>
 	{{else}}
 		<h2>
-			Click a color to begin playing
+			Click a picture to begin playing
 			<ul class="login_options inline unstyled">
 				{{#each options}}
 					{{> login_option}}
@@ -50,7 +50,7 @@
 <template name="login_option">
 	<li class="login_option" data-username="{{this.username}}">
 		<img src="http://www.tagged.com/imgsrv.php?sz=1&uid={{this.userId}}">
-			<div >{{this.name}}</div>
+			<div >{{this.username}}</div>
 		</img>
 	</li>
 </template>
