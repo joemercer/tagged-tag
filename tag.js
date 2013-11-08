@@ -1,5 +1,5 @@
-var TIMETOTAG = 30000;
-var DECREMENTVALUE = 500;
+var TIMETOTAG = 30; // seconds
+var DECREMENTVALUE = 1; // seconds
 
 Players = new Meteor.Collection('players');
 Tags = new Meteor.Collection('tags');
@@ -84,7 +84,7 @@ if (Meteor.isClient) {
         // reactivate tag
         existingTag.active = true;
         existingTag.owner = recipientUsername;
-        existingTag.timeRemaining = TIMETOTAG;
+        existingTag.timeRemaining = TIMETOTAG; //seconds
         existingTag.count = 0;
         existingTag.startTime = d.getTime();
 
@@ -97,7 +97,7 @@ if (Meteor.isClient) {
           value: value,
           owner: recipientUsername,
           active: true,
-          timeRemaining:TIMETOTAG,
+          timeRemaining:TIMETOTAG, //seconds
           count: 0,
           startTime: d.getTime()
         };
@@ -126,7 +126,7 @@ if (Meteor.isClient) {
       var recipient = Players.findOne({username:recipientUsername});
 
       tag.owner = recipient.username;
-      tag.timeRemaining = TIMETOTAG;
+      tag.timeRemaining = TIMETOTAG; // seconds
       tag.count = tag.count + 1;
       Tags.update({_id:tag._id}, tag);
 
@@ -148,7 +148,7 @@ if (Meteor.isClient) {
   };
 
   Template.leaderboard.tags = function() {
-    return Tags.find({}, {sort: {count:-1, timeRemaining:-1}});
+    return Tags.find({}, {sort: {count:-1, value:-1}});
   };
 
   Template.leaderboard.archivedTags = function() {
@@ -193,10 +193,10 @@ if (Meteor.isServer) {
     }
     if(Tags.find().count() == 0) {
       var d = new Date();
-      Tags.insert({ value: 'Cute', owner:'Red', active: true, timeRemaining:TIMETOTAG*10, count: 1, startTime: d.getTime()});
-      Tags.insert({ value: 'Fun', owner:'Green', active: true, timeRemaining:TIMETOTAG*10-1000, count: 1, startTime: d.getTime()});
-      Tags.insert({ value: 'Silly', owner:'Orange', active: true, timeRemaining:TIMETOTAG*10-2000, count: 0, startTime: d.getTime()});
-      Tags.insert({ value: 'Awesome', owner:'Blue', active: true, timeRemaining:TIMETOTAG*10-3000, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Cute', owner:'Red', active: true, timeRemaining:(TIMETOTAG+60), count: 1, startTime: d.getTime()});
+      Tags.insert({ value: 'Fun', owner:'Green', active: true, timeRemaining:(TIMETOTAG+60-3), count: 1, startTime: d.getTime()});
+      Tags.insert({ value: 'Silly', owner:'Orange', active: true, timeRemaining:(TIMETOTAG+60-6), count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Awesome', owner:'Blue', active: true, timeRemaining:(TIMETOTAG+60-9), count: 0, startTime: d.getTime()});
     }
 
     Meteor.setInterval(function(){
@@ -222,6 +222,6 @@ if (Meteor.isServer) {
         }
         Tags.update({_id:tag._id}, tag);
       });
-    }, DECREMENTVALUE);
+    }, DECREMENTVALUE*1000);
   });
 }
