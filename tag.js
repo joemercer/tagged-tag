@@ -29,7 +29,7 @@ if (Meteor.isClient) {
   };
 
   Template.login.options = function () {
-    return Players.find({open:true});
+    return Players.find({open:true, live:false}, {limit:4});
   };
 
   Template.login.events({
@@ -229,6 +229,7 @@ if (Meteor.isServer) {
       Players.insert({userId: "5995985639", username: "Nicoeltte", open: true, live:false, score: 0, tags: []});
       Players.insert({userId: "5996265657", username: "Jennelle", open: true, live: false, score: 0, tags: []});
       Players.insert({userId: "5995861086", username: "Joe", open: true, live:false, score: 0, tags: []});
+      Players.insert({userId: "5995496896", username: "Kevin", open: true, live:false, score: 0, tags: []});
     }
     // if(Tags.find().count() == 0) {
     //   var d = new Date();
