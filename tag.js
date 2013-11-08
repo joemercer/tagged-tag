@@ -89,6 +89,11 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.tag_toast.tags = function() {
+    var player = Session.get('loggedInUser');
+    return Tags.find({owner:player, active:true});
+  };
+
   Template.active_players.players = function() {
     var username = Session.get('loggedInUser');
     var player = Players.findOne({username:username});

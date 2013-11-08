@@ -69,8 +69,26 @@
 		{{this.value}} ({{this.count}})
 </template>
 
+<template name="tag_toast">
+	<h2>Tag Notifications</h2>
+	<ul class="unstyled">
+		{{#each tags}}
+			{{> tag_toast_item}}
+		{{/each}}
+	</ul>
+</template>
+
+<template name="tag_toast_item">
+	{{this.value}} has {{this.timeRemaining}} seconds left
+</template>
+
 <template name="main">
 	{{#if loggedIn}}
+		<div class="row-fluid">
+			<div id="tag-toast" class="span12">
+				{{> tag_toast}}
+			</div>
+		</div>
 		<div class="row-fluid">
 		  <div id="players" class="span4">
 		  		{{> active_players}}

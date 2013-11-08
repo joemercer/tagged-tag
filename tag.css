@@ -18,6 +18,10 @@
 	padding-bottom: 30px;
 }
 
+#tag-toast {
+	border-bottom: 1px black solid;
+}
+
 #login button {
 	background-image: none;
 }
