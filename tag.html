@@ -49,9 +49,9 @@
 
 <template name="login_option">
 	<li class="login_option" data-username="{{this.username}}">
-		<button class="btn btn-primary btn-lg" style="background-color:{{this.username}};">
-			{{this.username}}
-		</button>
+		<img src="http://www.tagged.com/imgsrv.php?sz=1&uid={{this.userId}}">
+			<div >{{this.name}}</div>
+		</img>
 	</li>
 </template>
 
@@ -95,7 +95,8 @@
 	<li class="active-player" data-username="{{this.username}}">
 		<div class="row">
 			<div class="span6">
-				<div class="active-player-visual" style="background-color:{{this.username}};">
+				<div class="active-player-visual" style="background-image: url(http://www.tagged.com/imgsrv.php?sz=1&uid={{this.userId}})">
+			<div >{{this.name}}</div>
 				</div>
 			</div>
 			<div class="span6">
