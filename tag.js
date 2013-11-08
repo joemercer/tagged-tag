@@ -184,20 +184,19 @@ if (Meteor.isClient) {
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
-    //onsole.log(Players.find().count);
     if(Players.find().count() == 0) {
       Players.insert({username: "Red", open: true, score: 0, tags: [], userId: "5995877324", name: "Rushan"});
       Players.insert({username: "Green", open: true, score: 0, tags: [], userId: "5995985639", name: "Nicolette"});
       Players.insert({username: "Blue", open: true, score: 0, tags: [], userId: "5996265657", name: "Jennelle"});
       Players.insert({username: "Orange", open: true, score: 0, tags: [], userId: "5995861086", name: "Joe"});
     }
-    if(Tags.find().count() == 0) {
-      var d = new Date();
-      Tags.insert({ value: 'Cute', owner:'Red', active: true, timeRemaining:(TIMETOTAG+60), count: 1, startTime: d.getTime()});
-      Tags.insert({ value: 'Fun', owner:'Green', active: true, timeRemaining:(TIMETOTAG+60-3), count: 1, startTime: d.getTime()});
-      Tags.insert({ value: 'Silly', owner:'Orange', active: true, timeRemaining:(TIMETOTAG+60-6), count: 0, startTime: d.getTime()});
-      Tags.insert({ value: 'Awesome', owner:'Blue', active: true, timeRemaining:(TIMETOTAG+60-9), count: 0, startTime: d.getTime()});
-    }
+    // if(Tags.find().count() == 0) {
+    //   var d = new Date();
+    //   Tags.insert({ value: 'Cute', owner:'Red', active: true, timeRemaining:(TIMETOTAG+60), count: 1, startTime: d.getTime()});
+    //   Tags.insert({ value: 'Fun', owner:'Green', active: true, timeRemaining:(TIMETOTAG+60-3), count: 1, startTime: d.getTime()});
+    //   Tags.insert({ value: 'Silly', owner:'Orange', active: true, timeRemaining:(TIMETOTAG+60-6), count: 0, startTime: d.getTime()});
+    //   Tags.insert({ value: 'Awesome', owner:'Blue', active: true, timeRemaining:(TIMETOTAG+60-9), count: 0, startTime: d.getTime()});
+    // }
 
     Meteor.setInterval(function(){
       Tags.find({}).forEach(function(tag){
