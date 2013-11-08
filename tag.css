@@ -1,6 +1,58 @@
-/* CSS declarations go here */
-#items-view #friends div.available {
-    background: none;
-    color: #333;
-    border: 1px dashed #999;
+
+#loggedInSymbol {
+	background-color:grey;
+	height: 80px;
+	width: 80px;
+	padding: 0px;
+	text-align: center;
+}
+
+#loggedInSymbol h1 {
+	font-size: 44px;
+	padding-top: 20px;
+
+}
+
+#login {
+	border-bottom: 1px black solid;
+	padding-top: 10px;
+	padding-bottom: 30px;
+}
+
+#login .login_options {
+
+}
+
+#login button {
+	background-image: none;
+}
+
+#players {
+	border-right: 1px black solid;
+}
+
+.active-player-visual {
+	height: 120px;
+	width: 120px;
+	margin: 20px;
+	margin-right: 0px;
+}
+
+.tagslist {
+	margin-top: 50px;
+	margin-bottom: 50px;
+	margin-left: 30px;
+}
+
+a,
+a:hover,
+a:focus {
+	cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  #players {
+		border-right: 0px black solid;
+		border-bottom: 1px black solid;
+	}
 }

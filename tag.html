@@ -3,59 +3,136 @@
 </head>
 
 <body>
-  {{> hello}}
-  {{> existingplayers}}
-  {{> profile}}
+	<div class="container">
+		<div class="row-fluid">
+			<div id="login" class="span12">
+		  	{{> login}}
+		  </div>
+		</div>
+		{{> main}}
+	</div>
 </body>
 
-<template name="hello">
-  <h1>Tagged!</h1>
-  {{#if notLoggedIn}}
-      <br>Name: <input id="login_name" type="text"></br>
-      <input id="login" type="button" value="Log me in!" />
-
+<template name="login">
+	{{#if loggedIn}}
+		<div class="row-fluid">
+			<div class="span9">
+				<h1>
+					You are {{loggedInUser}}
+				</h1>
+			</div>
+			<div class="span3">
+				<div id="loggedInSymbol" style="background-color:{{loggedInUser}};">
+					<h1>{{score}}</h1>
+				</div>
+			</div>
+		</div>
+	{{else}}
+		<h2> Click a color to begin playing
+			<ul class="login_options inline unstyled">
+				{{#each options}}
+					{{> login_option}}
+				{{/each}}
+			</ul>
+		</h2>
   {{/if}}
 </template>
 
-<template name="existingplayers">
-    <div>
-    {{#each players}}
-      <p>{{name}} - {{userId}}</p><img src="{{imageUrl}}{{userId}}" />
-    {{/each}}
-    </div>
+<template name="login_option">
+	<li class="login_option" data-username="{{this.username}}">
+		<button class="btn btn-primary btn-lg" style="background-color:{{this.username}};">
+			{{this.username}}
+		</button>
+	</li>
 </template>
 
-<template name="profile">
-  {{#if isLoggedIn}}
-  	<h3>Hello {{username}}!</h3>
-    <input id="logout" type="button" value="Logout!" />
-    <div id="items-view">
-      {{#if loading}}
-        Loading...
-      {{else}}
-        <div id="friends">
-            {{> friends}}
-        </div>
-        <ul id="tag-list">
-          {{#each playerTags}}
-            {{> tag_item}}
-          {{/each}}
-        </ul>
-      {{/if}}
-    </div>
-  {{/if}}
+<template name="main">
+	{{#if loggedIn}}
+		<div class="row-fluid">
+		  <div id="players" class="span4">
+		  		{{> active_players}}
+		  </div>
+		  <div id="leaderboard" class="span8">
+		  		{{> leaderboard}}
+		  </div>
+		</div>
+	{{/if}}
+</template>
+
+<template name="active_players">
+	<h2>Active Players</h2>
+	<ul class="unstyled">
+		{{#each players}}
+			{{> active_player}}
+		{{/each}}
+	</ul>
+</template>
+
+<template name="active_player">
+	<li class="active-player" data-username="{{this.username}}">
+		<div class="row">
+			<div class="span6">
+				<div class="active-player-visual" style="background-color:{{this.username}};">
+				</div>
+			</div>
+			<div class="span6">
+				<div class="tagslist btn-group">
+				  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				    Tag <span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu" role="menu">
+				  	{{#each tags}}
+				  		{{> tag_item}}
+				  	{{/each}}
+				  	<li class="divider"></li>
+				  	<li id="newTag">
+				  		<input type="text" value="New tag">
+				  		<button class=".btn .btn-default">Tag</button>
+				  	</li>
+				  </ul>
+				</div>
+			</div>
+		</div>
+	</li>
 </template>
 
 <template name="tag_item">
-    <p>{{this}}</p>
-    <button id="tag" data-name="{{this}}">Pass To</button>
-    <input id="receiver_name" type="text">
+	<li data-tagvalue="{{this.value}}" class="tag">
+		<a>
+				<h5>
+					{{#constant}}{{this.value}}{{/constant}} tag expires in {{this.timeRemaining}} ms
+				</h5>
+		</a>
+	</li>
 </template>
 
-<template name="friends">
-    {{#each name}}
-        {{this}}
-    {{/each}}
+<template name="leaderboard">
+	<h2>Leaderboard</h2>
+	<div class="row-fluid">
+		<div class="span6">
+			<h3>Players</h3>
+			<ul>
+				{{#each players}}
+					{{> player_rank}}
+				{{/each}}
+			</ul>
+		</div>
+		<div class="span6">
+			<h3>Tags</h3>
+			<ul>
+				{{#each tags}}
+					{{> tag_rank}}
+				{{/each}}
+			</ul>
+		</div>
+	</div>
 </template>
 
+<template name="player_rank">
+	<li>{{this.username}} has {{this.score}} points</li>
+</template>
+
+<template name="tag_rank">
+	<li>{{this.value}} has been tagged {{this.count}} times</li>
+</template>
 

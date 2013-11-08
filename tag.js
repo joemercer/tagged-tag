@@ -1,169 +1,168 @@
+var TIMETOTAG = 300000;
+var DECREMENTVALUE = 500;
+
 Players = new Meteor.Collection("players");
 Tags = new Meteor.Collection("tags");
-Meteor.methods({
-  //to user table;
-  addTag: function(_tagId, _userId) {
-    var player = Players.findOne({userId: _userId});
-    var _tags = player.tags;
-    _tags.push(_tagId);
-    Players.update({userId: _userId}, {$set: {tags: _tags}});
-  },
-  removeTag: function(_tagId, _userId) {
-    var player = Players.findOne({userId : _userId});
-    var index = player.tags.indexOf(_tagId);
-    console.log('index', index);
-    if(index != -1) {
-      var _tags = player.tags;
-      _tags.splice(index,1);
-      Players.update(player._id, {$set: {tags: _tags}});
-      console.log('removeTag', Players);
-    }
-  },
-  //to tag table
-  add_tag: function(_id, _image) {
-    Tags.insert({id: id, count: 0, time:0, image : _image});
-  },
-  increment_count: function(_id) {
-    var oldCount = Tags.findOne({id : _id}).count;
-    Tags.update({id: _id}, {$set: {count : oldCount + 1}});
-  }, 
-  add_player: function(_userId) {
-      Players.insert({
-          userId: _userId,
-          tags: []
-      });
-  }
-});
 
 if (Meteor.isClient) {
 
-  Template.hello.events({
-    'click #login' : function () {
-      var _userId = $('#login_name').val();
-      var match = Players.findOne({userId:_userId});
-      if (!match) {
-        Meteor.call("add_player", _userId);
-      }
-      Session.set('username', _userId);
-      Router.setUser(_userId);
+  Template.login.loggedInUser = function() {
+    return Session.get('loggedInUser');
+  };
+  Template.login.score = function() {
+    var username = Session.get('loggedInUser');
+    var player = Players.findOne({username:username});
+    if (player) {
+      return player.score
+    }
+    return 0;
+  };
+
+  Template.login.loggedIn = function() {
+    console.log('logged in', !!Session.get('loggedInUser'))
+    return !!Session.get('loggedInUser');
+  };
+
+  Template.main.loggedIn = function() {
+    return !!Session.get('loggedInUser');
+  };
+
+  Template.login.options = function () {
+    return Players.find({open:true});
+  };
+
+  Template.login_option.events({
+    'click button' : function (e) {
+      var $target = $(e.target);
+      var username = $target.parents('.login_option').data('username');
+      var player = Players.findOne({username:username});
+      player.open = false;
+      player.score = 0;
+      Players.update({_id:player._id}, player);
+      Session.set('loggedInUser', username);
     }
   });
 
-  Template.hello.notLoggedIn = function() {
-    //if (!Session.get('username')) Session.set('username', null);
-    return Session.equals('username', null);
+  Template.active_players.players = function() {
+    var username = Session.get('loggedInUser');
+    return Players.find({username: {$ne:username}});
   };
 
-  Template.existingplayers.players = function () {
-    return Players.find();
+  Template.active_player.tags = function() {
+    var player = Session.get('loggedInUser');
+    return Tags.find({owner:player, active:true});
   };
 
-  Template.existingplayers.imageUrl = function () {
+  Template.active_player.imageUrl = function () {
     return 'http://www.tagged.com/imgsrv.php?sz=1&uid=';
   };
 
-  Template.profile.playerTags = function () {
-    console.log(Players);
-    var user = Players.findOne({userId : Session.get('username')});
-    if (user){
-      return user.tags;
-    }
-    return []; 
-  };
-  Template.profile.isLoggedIn = function() {
-    return !Session.equals('username', null);
-  };
+  Template.active_player.events({
+    'click #newTag': function(e){
+      e.preventDefault();
+      e.stopPropagation();
+    },
+    'click #newTag input': function(e){
+      $(e.target).val('');
+    },
+    'click #newTag button': function(e){
+      var $target = $(e.target);
+      var value = $target.parent().find('input').val();
+      if (value === '') return;
+      console.log('added tag with value', value);
 
-  Template.profile.getUser = function() {
-    return Players.findOne({userId : Session.get('username')});
-  };
-  Template.profile.username = function() {
-    return Session.get('username');
-  };
-  Template.profile.loading = false;
-  /*
-  Template.profile.tags = function() {
-    var user = Session.get('username');
-    if (user){
-      var data = Players.findOne({userId:user});
-      if (data) {
-        return data.tags;
-      }
-    }
-  }
-  */
+      var recipientUsername = $target.parents('.active-player').data('username');
+      var recipient = Players.findOne({username:recipientUsername});
 
-  Template.profile.events({
-    'click #logout' : function () {
-      if (Session.get('username')) {
-        delete Session.keys['username'];
+      var d = new Date();
+
+      if (Tags.find({value:value}).count() !== 0) {
+        // notify
+        return;
       }
-      Deps.flush(); 
+
+      tag = {
+        value: value,
+        owner: recipientUsername,
+        active: true,
+        timeRemaining:TIMETOTAG,
+        count: 0,
+        startTime: d.getTime()
+      };
+
+      Tags.insert(tag);
+
+      //reset text
+      $target.parent().find('input').val('New tag');
+      $target.parents('.tagslist').removeClass('open');
     }
   });
 
   Template.tag_item.events({
-    'click #tag': function (e) {
+    'click': function (e) {
+      var $target = $(e.target);
 
-      var receiver_id = $('#receiver_name').val();
-      //console.log($(this).attr("data"));
-      var tagId = $(e.target).data('name').toString();
-      console.log('receiver_id', receiver_id, tagId);
-      //console.log(Session.get('username'));
-      //Deps.flush(); // update DOM before focus
-      //activateInput(tmpl.find("#edittag-input"));
+      var tagValue = $target.parents('.tag').data('tagvalue');
+      var tag = Tags.findOne({value:tagValue});
 
-      Meteor.call('addTag', tagId, receiver_id);
-      Meteor.call('removeTag',tagId, Session.get('username'));
-      Meteor.call('increment_count', tagId);
+      var recipientUsername = $target.parents('.active-player').data('username');
+      var recipient = Players.findOne({username:recipientUsername});
+
+      tag.owner = recipient.username;
+      tag.timeRemaining = TIMETOTAG;
+      tag.count = tag.count + 1;
+      Tags.update({_id:tag._id}, tag);
+
+      var senderUsername = Session.get('loggedInUser');
+      var sender = Players.findOne({username:senderUsername});
+
+      sender.score = sender.score + tag.count;
+      Players.update({_id:sender._id}, sender);
     }
   });
 
-  // Url routing using the Backbone Router
-  var TagRouter = Backbone.Router.extend({
-    routes: {
-      ":username": "main"
-    },
-    main: function (username) {
-      var oldUser = Session.get('username');
-      if (oldUser !== username) {
-        var match = Players.findOne({userId:username});
-        if (!match) {
-          Meteor.call("add_player", username);
-        }
-        Session.set('username', username);
-      }
-    },
-    setUser: function (username) {
-      this.navigate(username, true);
-    }
-  });
 
-  Router = new TagRouter;
+  Template.leaderboard.players = function() {
+    return Players.find({}, {sort: {score:-1}});
+  }
 
-  Meteor.startup(function () {
-    Backbone.history.start({pushState: true});
-    Session.set('username', null);
+  Template.leaderboard.tags = function() {
+    return Tags.find({}, {sort: {count:-1, timeRemaining:-1}});
+  }
 
-    // When adding tag to a todo, ID of the todo.
-    Session.setDefault('passing_tag', 0);
-  });
 }
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
     //onsole.log(Players.find().count);
     if(Players.find().count() == 0) {
-      Players.insert({userId: "5995877324", name: "Rushan", tags : ['1', '2']});
-      Players.insert({userId: "5995985639", name: "Nicolette", tags : ['3']});
-      Players.insert({userId: "5996265657", name: "Jennelle", tags : ['4']});
-      Players.insert({userId: "5995861086", name: "Joe", tags : []});
+      Players.insert({username: "Red", open: true, score: 0, userId: "5995877324", name: "Rushan"});
+      Players.insert({username: "Green", open: true, score: 0, userId: "5995985639", name: "Nicolette"});
+      Players.insert({username: "Blue", open: true, score: 0, userId: "5996265657", name: "Jennelle"});
+      Players.insert({username: "Orange", open: true, score: 0, userId: "5995861086", name: "Joe"});
     }
     if(Tags.find().count() == 0) {
-      Tags.insert({ id : '1', count: 0, time: 0, image : null});
-      Tags.insert({ id : '2', count: 0, time: 0, image : null});
-      Tags.insert({ id : '3', count: 0, time: 0, image : null});
-      Tags.insert({ id : '4', count: 0, time: 0, image : null});
+      var d = new Date();
+      Tags.insert({ value: 'Cute', owner:'Red', active: true, timeRemaining:TIMETOTAG, count: 1, startTime: d.getTime()});
+      Tags.insert({ value: 'Fun', owner:'Green', active: true, timeRemaining:TIMETOTAG-1000, count: 1, startTime: d.getTime()});
+      Tags.insert({ value: 'Silly', owner:'Orange', active: true, timeRemaining:TIMETOTAG-2000, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Awesome', owner:'Blue', active: true, timeRemaining:TIMETOTAG-3000, count: 0, startTime: d.getTime()});
     }
+
+    Meteor.setInterval(function(){
+      Tags.find({}).forEach(function(tag){
+        if (!tag.active) return;
+
+        tag.timeRemaining = tag.timeRemaining - DECREMENTVALUE;
+        if (tag.timeRemaining <= 0){
+          tag.active = false;
+
+          var player = Players.findOne({username:tag.owner});
+          player.score = player.score - tag.count;
+          Players.update({_id:player._id}, player);
+        }
+        Tags.update({_id:tag._id}, tag);
+      });
+    }, DECREMENTVALUE);
   });
 }
