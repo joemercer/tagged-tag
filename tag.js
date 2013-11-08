@@ -1,8 +1,10 @@
-var TIMETOTAG = 300000;
+var TIMETOTAG = 30000;
 var DECREMENTVALUE = 500;
 
-Players = new Meteor.Collection("players");
-Tags = new Meteor.Collection("tags");
+Players = new Meteor.Collection('players');
+Tags = new Meteor.Collection('tags');
+
+ArchivedTags = new Meteor.Collection('archivedTags');
 
 if (Meteor.isClient) {
 
@@ -76,21 +78,34 @@ if (Meteor.isClient) {
 
       var d = new Date();
 
-      if (Tags.find({value:value}).count() !== 0) {
-        // notify
-        return;
+      var existingTag = Tags.findOne({value:value});
+
+      if (existingTag) {
+        if (existingTag.active) return;
+        
+        // reactivate tag
+        existingTag.active = true;
+        existingTag.owner = recipientUsername;
+        existingTag.timeRemaining = TIMETOTAG;
+        existingTag.count = 0;
+        existingTag.startTime = d.getTime();
+
+        Tags.update({_id:existingTag._id}, existingTag);
       }
+      else {
 
-      tag = {
-        value: value,
-        owner: recipientUsername,
-        active: true,
-        timeRemaining:TIMETOTAG,
-        count: 0,
-        startTime: d.getTime()
-      };
+        // add a new tag
+        var newTag = {
+          value: value,
+          owner: recipientUsername,
+          active: true,
+          timeRemaining:TIMETOTAG,
+          count: 0,
+          startTime: d.getTime()
+        };
 
-      Tags.insert(tag);
+        Tags.insert(newTag);
+      }
 
       //reset text
       $target.parent().find('input').val('New tag');
@@ -117,6 +132,8 @@ if (Meteor.isClient) {
       var sender = Players.findOne({username:senderUsername});
 
       sender.score = sender.score + tag.count;
+      sender.tags.push(tagValue);
+
       Players.update({_id:sender._id}, sender);
     }
   });
@@ -124,11 +141,40 @@ if (Meteor.isClient) {
 
   Template.leaderboard.players = function() {
     return Players.find({}, {sort: {score:-1}});
-  }
+  };
 
   Template.leaderboard.tags = function() {
     return Tags.find({}, {sort: {count:-1, timeRemaining:-1}});
-  }
+  };
+
+  Template.leaderboard.archivedTags = function() {
+    return ArchivedTags.find({}, {sort: {timeLasted:-1}});
+  };
+
+  Template.tag_breakdown.tags = function() {
+    var username = Session.get('loggedInUser');
+    var player = Players.findOne({username:username});
+    if (!player) return [];
+
+    var toReturn = [];
+    $.each(player.tags, function(ind1, tag) {
+      var found = false;
+      $.each(toReturn, function(ind2, placed) {
+        if (tag === placed.value) {
+          placed.count = placed.count + 1;
+          found = true;
+        }
+      });
+      if (!found) {
+        toReturn.push({
+          value: tag,
+          count: 1
+        });
+      }
+    });
+
+    return toReturn;
+  };
 
 }
 
@@ -136,17 +182,17 @@ if (Meteor.isServer) {
   Meteor.startup(function () {
     //onsole.log(Players.find().count);
     if(Players.find().count() == 0) {
-      Players.insert({username: "Red", open: true, score: 0, userId: "5995877324", name: "Rushan"});
-      Players.insert({username: "Green", open: true, score: 0, userId: "5995985639", name: "Nicolette"});
-      Players.insert({username: "Blue", open: true, score: 0, userId: "5996265657", name: "Jennelle"});
-      Players.insert({username: "Orange", open: true, score: 0, userId: "5995861086", name: "Joe"});
+      Players.insert({username: "Red", open: true, score: 0, tags: [], userId: "5995877324", name: "Rushan"});
+      Players.insert({username: "Green", open: true, score: 0, tags: [], userId: "5995985639", name: "Nicolette"});
+      Players.insert({username: "Blue", open: true, score: 0, tags: [], userId: "5996265657", name: "Jennelle"});
+      Players.insert({username: "Orange", open: true, score: 0, tags: [], userId: "5995861086", name: "Joe"});
     }
     if(Tags.find().count() == 0) {
       var d = new Date();
-      Tags.insert({ value: 'Cute', owner:'Red', active: true, timeRemaining:TIMETOTAG, count: 1, startTime: d.getTime()});
-      Tags.insert({ value: 'Fun', owner:'Green', active: true, timeRemaining:TIMETOTAG-1000, count: 1, startTime: d.getTime()});
-      Tags.insert({ value: 'Silly', owner:'Orange', active: true, timeRemaining:TIMETOTAG-2000, count: 0, startTime: d.getTime()});
-      Tags.insert({ value: 'Awesome', owner:'Blue', active: true, timeRemaining:TIMETOTAG-3000, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Cute', owner:'Red', active: true, timeRemaining:TIMETOTAG*10, count: 1, startTime: d.getTime()});
+      Tags.insert({ value: 'Fun', owner:'Green', active: true, timeRemaining:TIMETOTAG*10-1000, count: 1, startTime: d.getTime()});
+      Tags.insert({ value: 'Silly', owner:'Orange', active: true, timeRemaining:TIMETOTAG*10-2000, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Awesome', owner:'Blue', active: true, timeRemaining:TIMETOTAG*10-3000, count: 0, startTime: d.getTime()});
     }
 
     Meteor.setInterval(function(){
@@ -155,11 +201,20 @@ if (Meteor.isServer) {
 
         tag.timeRemaining = tag.timeRemaining - DECREMENTVALUE;
         if (tag.timeRemaining <= 0){
+
+          // change tag to inactive
           tag.active = false;
 
+          // decrement players score
           var player = Players.findOne({username:tag.owner});
           player.score = player.score - tag.count;
           Players.update({_id:player._id}, player);
+
+          // archive the tag
+          var d = new Date();
+          tag.timeLasted = Math.round(100*((d.getTime() - tag.startTime)/(1000*60)))/100;
+          tag.timeRemaining = -1;
+          ArchivedTags.insert(tag);
         }
         Tags.update({_id:tag._id}, tag);
       });

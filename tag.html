@@ -20,6 +20,7 @@
 				<h1>
 					You are {{loggedInUser}}
 				</h1>
+				{{> tag_breakdown}}
 			</div>
 			<div class="span3">
 				<div id="loggedInSymbol" style="background-color:{{loggedInUser}};">
@@ -44,6 +45,20 @@
 			{{this.username}}
 		</button>
 	</li>
+</template>
+
+<template name="tag_breakdown">
+	<p class="lead tag-breakdown">
+		<ul class="unstyled inline" style="margin-left:20px">
+			{{#each tags}}
+				{{> tag_snippet}}
+			{{/each}}
+		</ul>
+	<p>
+</template>
+
+<template name="tag_snippet">
+		{{this.value}} ({{this.count}})
 </template>
 
 <template name="main">
@@ -124,6 +139,12 @@
 					{{> tag_rank}}
 				{{/each}}
 			</ul>
+			<h3>Archived Tags</h3>
+			<ul>
+				{{#each archivedTags}}
+					{{> archivedTag_rank}}
+				{{/each}}
+			</ul>
 		</div>
 	</div>
 </template>
@@ -134,5 +155,9 @@
 
 <template name="tag_rank">
 	<li>{{this.value}} has been tagged {{this.count}} times</li>
+</template>
+
+<template name="archivedTag_rank">
+	<li>{{this.value}} lasted {{this.timeLasted}} minutes</li>
 </template>
 

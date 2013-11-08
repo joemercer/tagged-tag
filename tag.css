@@ -10,17 +10,12 @@
 #loggedInSymbol h1 {
 	font-size: 44px;
 	padding-top: 20px;
-
 }
 
 #login {
 	border-bottom: 1px black solid;
 	padding-top: 10px;
 	padding-bottom: 30px;
-}
-
-#login .login_options {
-
 }
 
 #login button {
