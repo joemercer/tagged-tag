@@ -54,7 +54,7 @@ if (Meteor.isClient) {
       else {
         var newPlayer = {
           userId: userId,
-          name: nickname,
+          username: nickname,
           tags: [],
           open: false,
           live: true,
