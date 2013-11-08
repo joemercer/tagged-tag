@@ -140,7 +140,7 @@ if (Meteor.isClient) {
           owner: recipientUsername,
           active: true,
           timeRemaining:TIMETOTAG, //seconds
-          count: 0,
+          count: 1,
           startTime: d.getTime()
         };
 
