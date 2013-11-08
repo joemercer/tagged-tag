@@ -24,6 +24,10 @@ if (Meteor.isClient) {
     return !!Session.get('loggedInUser');
   };
 
+  Template.login.loggedInUID = function(){
+     return Players.findOne({username:Session.get('loggedInUser')}).userId;
+  }
+
   Template.main.loggedIn = function() {
     return !!Session.get('loggedInUser');
   };
