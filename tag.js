@@ -54,7 +54,7 @@ if (Meteor.isClient) {
 
         existing.live = true;
         existing.open = false;
-        Players.update({_uid:existing._uid}, existing);
+        Players.update({_id:existing._id}, existing);
       }
       else {
         var newPlayer = {
@@ -84,6 +84,7 @@ if (Meteor.isClient) {
       var player = Players.findOne({username:username});
       player.open = false;
       player.score = 0;
+      player.live = true;
       Players.update({_id:player._id}, player);
       Session.set('loggedInUser', username);
     }
@@ -91,7 +92,9 @@ if (Meteor.isClient) {
 
   Template.active_players.players = function() {
     var username = Session.get('loggedInUser');
-    return Players.find({username: {$ne:username}});
+    var player = Players.findOne({username:username});
+
+    return Players.find({live:true, _id: {$ne:player._id}});
   };
 
   Template.active_player.tags = function() {
@@ -122,7 +125,6 @@ if (Meteor.isClient) {
       var d = new Date();
 
       var existingTag = Tags.findOne({value:value});
-
       if (existingTag) {
         if (existingTag.active) return;
         
@@ -143,7 +145,7 @@ if (Meteor.isClient) {
           owner: recipientUsername,
           active: true,
           timeRemaining:TIMETOTAG, //seconds
-          count: 0,
+          count: 1,
           startTime: d.getTime()
         };
 
