@@ -32,6 +32,46 @@ if (Meteor.isClient) {
     return Players.find({open:true});
   };
 
+  Template.login.events({
+    'click input': function(e){
+      $(e.target).val('');
+    },
+    'click button.do-login' : function(e) {
+      $target = $(e.target);
+      var userId = $target.parent().find('#login-id').val();
+      var nickname = $target.parent().find('#login-name').val();
+
+      if (userId === '' || nickname === '') return;
+
+      var existing = Players.findOne({userId: userId});
+      if (existing) {
+        if (existing.live) return;
+
+        existing.live = true;
+        existing.open = false;
+        Players.update({_uid:existing._uid}, existing);
+      }
+      else {
+        var newPlayer = {
+          userId: userId,
+          name: nickname,
+          tags: [],
+          open: false,
+          live: true,
+          score: 0
+        };
+
+        Players.insert(newPlayer);
+      }
+
+      Session.set('loggedInUser', nickname);
+
+      // reset the defaults
+      $target.parent().find('#login-id').val('Tagged UserID');
+      $target.parent().find('#login-name').val('Nickname');
+    }
+  });
+
   Template.login_option.events({
     'click button' : function (e) {
       var $target = $(e.target);
@@ -185,10 +225,10 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.startup(function () {
     if(Players.find().count() == 0) {
-      Players.insert({username: "Red", open: true, score: 0, tags: [], userId: "5995877324", name: "Rushan"});
-      Players.insert({username: "Green", open: true, score: 0, tags: [], userId: "5995985639", name: "Nicolette"});
-      Players.insert({username: "Blue", open: true, score: 0, tags: [], userId: "5996265657", name: "Jennelle"});
-      Players.insert({username: "Orange", open: true, score: 0, tags: [], userId: "5995861086", name: "Joe"});
+      Players.insert({username: "Red", open: true, live: false, score: 0, tags: [], userId: "5995877324", name: "Rushan"});
+      Players.insert({username: "Green", open: true, live: false, score: 0, tags: [], userId: "5995985639", name: "Nicolette"});
+      Players.insert({username: "Blue", open: true, live: false, score: 0, tags: [], userId: "5996265657", name: "Jennelle"});
+      Players.insert({username: "Orange", open: true, live: false, score: 0, tags: [], userId: "5995861086", name: "Joe"});
     }
     // if(Tags.find().count() == 0) {
     //   var d = new Date();
