@@ -22,6 +22,25 @@
 	border-bottom: 1px black solid;
 }
 
+#tag-value {
+	margin: 5px;
+    padding: 2px 7px;
+    font-size: 80%;
+    font-weight: bold;
+    background: #999;
+    color: #fff;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -o-border-radius: 4px;
+
+    opacity: 1;
+    transition: opacity 0.3s linear;
+    -moz-transition: opacity 0.3s linear;
+    -webkit-transition: opacity 0.3s linear;
+    -o-transition: opacity 0.3s linear;
+}
+
 #login button {
 	background-image: none;
 }

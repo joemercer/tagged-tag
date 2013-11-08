@@ -94,6 +94,35 @@ if (Meteor.isClient) {
     return Tags.find({owner:player, active:true});
   };
 
+  Template.tag_toast_item.events({
+    'click button': function(e){
+      $target = $(e.target);
+      var tagValue = $target.parents('.tag-toast-value').data('tagvalue');
+      var tag = Tags.findOne({value:tagValue});
+      var recipientUsername = tag.lastTaggedBy;
+      var recipient = Players.findOne({username:recipientUsername});
+
+      var senderUsername = Session.get('loggedInUser');
+      var sender = Players.findOne({username:senderUsername});
+
+      sender.score = sender.score + tag.count;
+
+      tag.active = true;
+      tag.owner = recipientUsername;
+      tag.lastTaggedBy = senderUsername;
+      tag.timeRemaining = TIMETOTAG; //seconds
+      tag.count = tag.count+1;
+
+      Tags.update({_id:tag._id}, tag);
+
+      recipient.tags.push(tagValue);
+      Players.update({_id:recipient._id}, recipient);
+
+      
+      Players.update({_id:sender._id}, sender);
+    }
+  });
+
   Template.active_players.players = function() {
     var username = Session.get('loggedInUser');
     var player = Players.findOne({username:username});
@@ -126,6 +155,8 @@ if (Meteor.isClient) {
       var recipientUsername = $target.parents('.active-player').data('username');
       var recipient = Players.findOne({username:recipientUsername});
 
+      var senderUsername = Session.get('loggedInUser');
+
       var d = new Date();
 
       var existingTag = Tags.findOne({value:value});
@@ -135,6 +166,7 @@ if (Meteor.isClient) {
         // reactivate tag
         existingTag.active = true;
         existingTag.owner = recipientUsername;
+        existingTag.lastTaggedBy = senderUsername;
         existingTag.timeRemaining = TIMETOTAG; //seconds
         existingTag.count = 0;
         existingTag.startTime = d.getTime();
@@ -147,6 +179,7 @@ if (Meteor.isClient) {
         var newTag = {
           value: value,
           owner: recipientUsername,
+          lastTaggedBy:senderUsername,
           active: true,
           timeRemaining:TIMETOTAG, //seconds
           count: 1,
@@ -176,13 +209,14 @@ if (Meteor.isClient) {
       var recipientUsername = $target.parents('.active-player').data('username');
       var recipient = Players.findOne({username:recipientUsername});
 
+      var senderUsername = Session.get('loggedInUser');
+      var sender = Players.findOne({username:senderUsername});
+
       tag.owner = recipient.username;
+      tag.lastTaggedBy = senderUsername;
       tag.timeRemaining = TIMETOTAG; // seconds
       tag.count = tag.count + 1;
       Tags.update({_id:tag._id}, tag);
-
-      var senderUsername = Session.get('loggedInUser');
-      var sender = Players.findOne({username:senderUsername});
 
       sender.score = sender.score + tag.count;
       Players.update({_id:sender._id}, sender);
@@ -237,10 +271,13 @@ if (Meteor.isServer) {
   Meteor.startup(function () {
     if(Players.find().count() == 0) {
       Players.insert({userId: "5995877324", username: "Rushan", open: true, live:false, score: 0, tags: []});
-      Players.insert({userId: "5995985639", username: "Nicoeltte", open: true, live:false, score: 0, tags: []});
+      Players.insert({userId: "5995985639", username: "Nicolette", open: true, live:false, score: 0, tags: []});
       Players.insert({userId: "5996265657", username: "Jennelle", open: true, live: false, score: 0, tags: []});
       Players.insert({userId: "5995861086", username: "Joe", open: true, live:false, score: 0, tags: []});
       Players.insert({userId: "5995496896", username: "Kevin", open: true, live:false, score: 0, tags: []});
+      Players.insert({userId: "6736003894", username: "Eric Y", open: true, live:false, score: 0, tags: []});
+      Players.insert({userId: "5453891178", username: "mpark", open: true, live:false, score: 0, tags: []});
+    
     }
     // if(Tags.find().count() == 0) {
     //   var d = new Date();

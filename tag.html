@@ -79,7 +79,14 @@
 </template>
 
 <template name="tag_toast_item">
-	{{this.value}} has {{this.timeRemaining}} seconds left
+	<li class="tag-toast-value" data-tagvalue="{{this.value}}">
+		{{this.lastTaggedBy}} just tagged you {{this.value}}! {{this.value}} has {{this.timeRemaining}} seconds remaining.
+		{{#constant}}
+			<button type="button" class="btn btn-default">
+				TagBack!
+			</button>
+		{{/constant}}
+	</li>
 </template>
 
 <template name="main">
