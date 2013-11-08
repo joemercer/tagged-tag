@@ -33,7 +33,7 @@ if (Meteor.isClient) {
   };
 
   Template.login_option.events({
-    'click button' : function (e) {
+    'click img' : function (e) {
       var $target = $(e.target);
       var username = $target.parents('.login_option').data('username');
       var player = Players.findOne({username:username});
@@ -185,10 +185,10 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.startup(function () {
     if(Players.find().count() == 0) {
-      Players.insert({username: "Red", open: true, score: 0, tags: [], userId: "5995877324", name: "Rushan"});
-      Players.insert({username: "Green", open: true, score: 0, tags: [], userId: "5995985639", name: "Nicolette"});
-      Players.insert({username: "Blue", open: true, score: 0, tags: [], userId: "5996265657", name: "Jennelle"});
-      Players.insert({username: "Orange", open: true, score: 0, tags: [], userId: "5995861086", name: "Joe"});
+      Players.insert({username: "Rushan", open: true, score: 0, tags: [], userId: "5995877324"});
+      Players.insert({username: "Nicoeltte", open: true, score: 0, tags: [], userId: "5995985639"});
+      Players.insert({username: "Jennelle", open: true, score: 0, tags: [], userId: "5996265657"});
+      Players.insert({username: "Joe", open: true, score: 0, tags: [], userId: "5995861086"});
     }
     // if(Tags.find().count() == 0) {
     //   var d = new Date();
