@@ -288,7 +288,7 @@ if (Meteor.isServer) {
     // }
 
     Meteor.setInterval(function(){
-      Tags.find({}).forEach(function(tag){
+      Tags.find({active:true}).forEach(function(tag){
         if (!tag.active) return;
 
         tag.timeRemaining = tag.timeRemaining - DECREMENTVALUE;
