@@ -157,9 +157,11 @@ if (Meteor.isClient) {
 
       var recipientUsername = $('input#addTagPlayer').val();
       cacheRecipientUsername = recipientUsername;
-      var recipient = Players.findOne({username:recipientUsername});
+      var recipient = Players.findOne({username:recipientUsername, live:true});
 
+      // error handling - can only send tags to other live players
       if (username === recipientUsername) return;
+      if (!recipient) return;
 
       var d = new Date();
 
