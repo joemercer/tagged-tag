@@ -103,7 +103,7 @@ if (Meteor.isClient) {
   };
 
   Template.tag_toast_item.events({
-    'click button': function(e){
+    'click button.tag-back': function(e){
       $target = $(e.target);
       var tagValue = $target.parents('.tag-toast-value').data('tagvalue');
       var tag = Tags.findOne({value:tagValue});
@@ -126,6 +126,20 @@ if (Meteor.isClient) {
       recipient.tags.push(tagValue);
       Players.update({_id:recipient._id}, recipient);
 
+      Players.update({_id:sender._id}, sender);
+    },
+    'click button.more-time': function(e){
+      $target = $(e.target);
+      var tagValue = $target.parents('.tag-toast-value').data('tagvalue');
+      var tag = Tags.findOne({value:tagValue});
+
+      tag.timeRemaining = tag.timeRemaining + TIMETOTAG; //seconds
+      Tags.update({_id:tag._id}, tag);
+
+      var senderUsername = Session.get('loggedInUser');
+      var sender = Players.findOne({username:senderUsername});
+
+      sender.score = sender.score - 5;
       Players.update({_id:sender._id}, sender);
     }
   });
@@ -269,6 +283,9 @@ if (Meteor.isClient) {
       tag.count = tag.count + 1;
 
       Tags.update({_id:tag._id}, tag);
+
+      player.tags.push(tagValue);
+      Players.update({_id:player._id}, player);
 
       $('#stealTagModal .modal-footer button.closeModal').click();
     }

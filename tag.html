@@ -77,10 +77,26 @@
 	</ul>
 </template>
 
+<template name="tag_toast_item">
+	<li class="tag-toast-value" data-tagvalue="{{this.value}}">
+		{{this.lastTaggedBy}} just tagged you {{this.value}}! {{this.value}} has {{this.timeRemaining}} seconds remaining.
+		{{#constant}}
+			<button type="button" class="tag-back btn btn-default">
+				TagBack!
+			</button>
+		{{/constant}}
+		{{#constant}}
+			<button type="button" class="more-time btn btn-default">
+				Get More Time
+			</button>
+		{{/constant}}
+	</li>
+</template>
+
 <template name="tagActions">
 	<h2>Actions</h2>
 	<a href="#addTagModal" id="openAddTagModal" role="button" class="btn" data-toggle="modal">
-		Add a new Tag
+		Add a Tag
 	</a>
 	{{> addTagModal}}
 	<a href="#stealTagModal" id="openStealTagModal" role="button" class="btn" data-toggle="modal">
@@ -93,7 +109,7 @@
 	<div id="addTagModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h3>Add a new Tag</h3>
+			<h3>Add a Tag</h3>
 		</div>
 		<div class="modal-body">
 			Tag <input id="addTagPlayer" type="text" value="Joe"> as <input id="addTagTag" type="text" value="Awesome">
@@ -124,17 +140,6 @@
 			<button id="stealNewTag" class="btn btn-primary">Steal</button>
 		</div>
 	</div>
-</template>
-
-<template name="tag_toast_item">
-	<li class="tag-toast-value" data-tagvalue="{{this.value}}">
-		{{this.lastTaggedBy}} just tagged you {{this.value}}! {{this.value}} has {{this.timeRemaining}} seconds remaining.
-		{{#constant}}
-			<button type="button" class="btn btn-default">
-				TagBack!
-			</button>
-		{{/constant}}
-	</li>
 </template>
 
 <template name="main">
