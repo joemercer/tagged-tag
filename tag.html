@@ -20,6 +20,9 @@
 				<h1>
 					You are {{loggedInUser}}
 				</h1>
+				<a href="#instructionsModal" id="openinstructionsModal" role="button" class="btn" data-toggle="modal">
+					How do I play?
+				</a>
 				{{> tag_breakdown}}
 			</div>
 			<div class="span3">
@@ -40,11 +43,43 @@
 			<br>
 			<input id="login-id" type="text" value="Tagged UserID">
 			<input id="login-name" type="text" value="Nickname">
-			<button class="do-login">
+			<button class="do-login btn btn-default">
 				Login
 			</button>
+			<br>
+			Or learn about the game
+			<a href="#instructionsModal" id="openinstructionsModal" role="button" class="btn" data-toggle="modal">
+				How do I play?
+			</a>
 		</h2>
   {{/if}}
+	{{> instructionsModal}}
+</template>
+
+<template name="instructionsModal">
+	<div id="instructionsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3>Instructions</h3>
+		</div>
+		<div class="modal-body">
+			<p>
+				Hello friend, welcome to TaggedTag: a game where you can tag your friends on Tagged with tags. It's super fun, let me explain.
+			</p>
+			<p>
+				When you get tagged it will show up in your notifications bar. You can either choose to do a TagBack, or you can use that tag to tag someone else by clicking on their profile picture. Each time you tag someone, you'll get some points. But watch out! You only have 30 seconds before a tag expires and costs you points. If you're feeling too stressed out, you can buy more time for 5 points. Additionally, you can add a new tag into the game for free by clicking the Add a Tag button.
+			</p>
+			<p>
+				Beneath, you'll find the Leaderboard with a list of the highest ranking players and tags.
+			</p>
+			<p>
+				Have fun!
+			</p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button>
+		</div>
+	</div>
 </template>
 
 <template name="login_option">
