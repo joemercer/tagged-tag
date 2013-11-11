@@ -291,6 +291,12 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.active_players.enoughPlayers = function() {
+    var username = Session.get('loggedInUser');
+    var player = Players.findOne({username:username});
+    return Players.find({live:true, _id: {$ne:player._id}}).count() > 0; 
+  }
+
   Template.active_players.players = function() {
     var username = Session.get('loggedInUser');
     var player = Players.findOne({username:username});

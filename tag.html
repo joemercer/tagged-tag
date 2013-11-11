@@ -132,7 +132,7 @@
 </template>
 
 <template name="tagActions">
-	<h2>Actions</h2>
+	<h2>Tag Actions</h2>
 	<a href="#addTagModal" id="openAddTagModal" role="button" class="btn" data-toggle="modal">
 		Add a Tag
 	</a>
@@ -205,11 +205,17 @@
 
 <template name="active_players">
 	<h2>Active Players</h2>
-	<ul class="unstyled inline">
-		{{#each players}}
-			{{> active_player}}
-		{{/each}}
-	</ul>
+	{{#if enoughPlayers}}
+		<ul class="unstyled inline">
+			{{#each players}}
+				{{> active_player}}
+			{{/each}}
+		</ul>
+	{{else}}
+		<p>
+			Uh oh, there doesn't seem to be anyone else online right now. Try asking a friend to come play with you.
+		</p>
+	{{/if}}
 </template>
 
 <template name="active_player">
