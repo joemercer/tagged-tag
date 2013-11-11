@@ -257,8 +257,14 @@ if (Meteor.isClient) {
       e.preventDefault();
       e.stopPropagation();
     },
-    'click #newTag input': function(e){
+    'click #newTag input' : function(e){
       $(e.target).val('');
+    },
+    'keyup #newTag input' : function(e) {
+      // user presses enter
+      if (e.keyCode === 13) {
+        $(e.target).parents('#newTag').find('button').click();
+      }
     },
     'click #newTag button': function(e){
       var $target = $(e.target);
