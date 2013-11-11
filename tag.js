@@ -164,6 +164,14 @@ if (Meteor.isClient) {
     'click input#addTagTag': function(e){
       $target = $(e.target);
       $target.val('');
+
+      var typeaheadSource = [];
+      Tags.find({}).forEach(function(tag){
+        typeaheadSource.push(tag.value);
+      });
+      $target.typeahead({
+        source: typeaheadSource
+      });
     },
     'click button#addNewTag' : function(e) {
       var username = Session.get('loggedInUser');
@@ -184,9 +192,11 @@ if (Meteor.isClient) {
       var existingTag = Tags.findOne({value:tagValue});
 
       if (existingTag) {
-        $('#addTagModal .modal-body').html('<p> Are you sure? Tagging '+recipientUsername+' as '+tagValue+' will cost 10 points because '+tagValue+' is not a new tag</p>');
+        $('#addTagModal .modal-body').html('<p> Are you sure? Tagging '+recipientUsername+' as '+tagValue+' will cost 10 points because '+tagValue+' is not owned by you.</p>');
 
         $('#addTagModal .modal-footer').html('<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button><button id="addNewTagConfirm" class="btn btn-primary">Ok</button>');
+
+        $('#addTagModal .modal-footer #addNewTagConfirm').focus();
 
         return;
       }
@@ -469,17 +479,29 @@ if (Meteor.isServer) {
       Players.insert({userId: "5995985639", username: "Nicolette", open: true, live:false, last_ping:-1, score: 0, tags: []});
       Players.insert({userId: "5996265657", username: "Jennelle", open: true, live: false, last_ping:-1, score: 0, tags: []});
       Players.insert({userId: "5995496896", username: "Kevin", open: true, live:false, last_ping:-1, score: 0, tags: []});
-      Players.insert({userId: "6736003894", username: "Eric Y", open: true, live:false, last_ping:-1, score: 0, tags: []});
-      Players.insert({userId: "5453891178", username: "mpark", open: true, live:false, last_ping:-1, score: 0, tags: []});
+      Players.insert({userId: "6736003894", username: "Eric", open: true, live:false, last_ping:-1, score: 0, tags: []});
+      Players.insert({userId: "5453891178", username: "Michael", open: true, live:false, last_ping:-1, score: 0, tags: []});
     
     }
-    // if(Tags.find().count() == 0) {
-    //   var d = new Date();
-    //   Tags.insert({ value: 'Cute', owner:'Joe', active: true, timeRemaining:(TIMETOTAG), count: 1, startTime: d.getTime()});
-    //   Tags.insert({ value: 'Fun', owner:'Joe', active: true, timeRemaining:(TIMETOTAG-3), count: 1, startTime: d.getTime()});
-    //   Tags.insert({ value: 'Silly', owner:'Joe', active: true, timeRemaining:(TIMETOTAG-6), count: 0, startTime: d.getTime()});
-    //   Tags.insert({ value: 'Awesome', owner:'Joe', active: true, timeRemaining:(TIMETOTAG-9), count: 0, startTime: d.getTime()});
-    // }
+    if(Tags.find().count() == 0) {
+      var d = new Date();
+      Tags.insert({ value: 'Cute', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Fun', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Silly', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Awesome', owner:'Joe', active: false, timeRemaining:01, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Happy', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Goofy', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Flustered', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Hot', owner:'Joe', active: false, timeRemaining:01, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Cool', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Chill', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Nasty', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Funny', owner:'Joe', active: false, timeRemaining:01, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Tired', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Cranky', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Optimistic', owner:'Joe', active: false, timeRemaining:-1, count: 0, startTime: d.getTime()});
+      Tags.insert({ value: 'Attractive', owner:'Joe', active: false, timeRemaining:01, count: 0, startTime: d.getTime()});
+    }
 
     // Set interval to check for dead clients and reopen them
     Meteor.setInterval(function(){
