@@ -260,6 +260,24 @@ if (Meteor.isClient) {
 
       $('#input#addTagTag').val('Awesome');
       $('input#addTagPlayer').val('Joe');
+    },
+    'click #addTagModal .modal-header button.close' : function(e) {
+      //reset text
+      $('#addTagModal .modal-body').html('Tag <input id="addTagPlayer" type="text" value="Joe"> as <input id="addTagTag" type="text" value="Awesome"><br><br><br><br><br><br><br>');
+
+      $('#addTagModal .modal-footer').html('<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button><button id="addNewTag" class="btn btn-primary">Tag</button>');
+
+      $('#input#addTagTag').val('Awesome');
+      $('input#addTagPlayer').val('Joe');
+    },
+    'click #addTagModal .modal-footer button.closeModal' : function(e) {
+      //reset text
+      $('#addTagModal .modal-body').html('Tag <input id="addTagPlayer" type="text" value="Joe"> as <input id="addTagTag" type="text" value="Awesome"><br><br><br><br><br><br><br>');
+
+      $('#addTagModal .modal-footer').html('<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button><button id="addNewTag" class="btn btn-primary">Tag</button>');
+
+      $('#input#addTagTag').val('Awesome');
+      $('input#addTagPlayer').val('Joe');
     }
   });
 
