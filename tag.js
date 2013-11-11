@@ -478,10 +478,10 @@ if (Meteor.isServer) {
       Players.insert({userId: "5995877324", username: "Rushan", open: true, live:false, last_ping:-1, score: 0, tags: []});
       Players.insert({userId: "5995985639", username: "Nicolette", open: true, live:false, last_ping:-1, score: 0, tags: []});
       Players.insert({userId: "5996265657", username: "Jennelle", open: true, live: false, last_ping:-1, score: 0, tags: []});
+      Players.insert({userId: "5995861790", username: "Ghost", open: true, live:false, last_ping:-1, score: 0, tags: []});
       Players.insert({userId: "5995496896", username: "Kevin", open: true, live:false, last_ping:-1, score: 0, tags: []});
-      Players.insert({userId: "6736003894", username: "Eric", open: true, live:false, last_ping:-1, score: 0, tags: []});
       Players.insert({userId: "5453891178", username: "Michael", open: true, live:false, last_ping:-1, score: 0, tags: []});
-    
+      Players.insert({userId: "5995988328", username: "Tudor", open: true, live:false, last_ping:-1, score: 0, tags: []});
     }
     if(Tags.find().count() == 0) {
       var d = new Date();
