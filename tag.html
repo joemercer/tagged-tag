@@ -76,6 +76,27 @@
 			{{> tag_toast_item}}
 		{{/each}}
 	</ul>
+	<a href="#addTagModal" id="openAddTagModal" role="button" class="btn" data-toggle="modal">
+		Add a new Tag
+	</a>
+	{{> addTagModal}}
+</template>
+
+<template name="addTagModal">
+	<div id="addTagModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3>Add a new Tag</h3>
+		</div>
+		<div class="modal-body">
+			Tag <input id="addTagPlayer" type="text" value="Joe"> as <input id="addTagTag" type="text" value="Awesome">
+			<br><br><br><br><br><br><br>
+		</div>
+		<div class="modal-footer">
+			<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button>
+			<button id="addNewTag" class="btn btn-primary">Tag</button>
+		</div>
+	</div>
 </template>
 
 <template name="tag_toast_item">

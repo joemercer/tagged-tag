@@ -1,6 +1,9 @@
 var TIMETOTAG = 30; // seconds
 var DECREMENTVALUE = 1; // seconds
 
+var CHECKFORDEADCLIENTSINTERVAL = 90; //seconds
+var PINGSERVERINTERVAL = 30; //seconds
+
 Players = new Meteor.Collection('players');
 Tags = new Meteor.Collection('tags');
 
@@ -47,12 +50,15 @@ if (Meteor.isClient) {
 
       if (userId === '' || nickname === '') return;
 
+      var now = (new Date()).getTime();
+
       var existing = Players.findOne({userId: userId});
       if (existing) {
         if (existing.live) return;
 
         existing.live = true;
         existing.open = false;
+        existing.last_ping = now;
         Players.update({_id:existing._id}, existing);
       }
       else {
@@ -62,6 +68,7 @@ if (Meteor.isClient) {
           tags: [],
           open: false,
           live: true,
+          last_ping: now,
           score: 0
         };
 
@@ -80,10 +87,11 @@ if (Meteor.isClient) {
     'click img' : function (e) {
       var $target = $(e.target);
       var username = $target.parents('.login_option').data('username');
+      var now = (new Date()).getTime();
       var player = Players.findOne({username:username});
       player.open = false;
-      player.score = 0;
       player.live = true;
+      player.last_ping = now;
       Players.update({_id:player._id}, player);
       Session.set('loggedInUser', username);
     }
@@ -118,15 +126,119 @@ if (Meteor.isClient) {
       recipient.tags.push(tagValue);
       Players.update({_id:recipient._id}, recipient);
 
-      
       Players.update({_id:sender._id}, sender);
+    }
+  });
+
+  var cacheRecipientUsername;
+  var cacheTagValue;
+  Template.addTagModal.events({
+    'click input#addTagPlayer': function(e){
+      $target = $(e.target);
+      $target.val('');
+
+      var username = Session.get('loggedInUser');
+      var player = Players.findOne({username:username});
+      var typeaheadSource = ['apple', 'banana'];
+      Players.find({live:true, _id: {$ne:player._id}}).forEach(function(player){
+        typeaheadSource.push(player.username);
+      });
+      $target.typeahead({
+        source: typeaheadSource
+      });
+    },
+    'click input#addTagTag': function(e){
+      $target = $(e.target);
+      $target.val('');
+    },
+    'click button#addNewTag' : function(e) {
+      var username = Session.get('loggedInUser');
+      var sender = Players.findOne({username:username});
+
+      var recipientUsername = $('input#addTagPlayer').val();
+      cacheRecipientUsername = recipientUsername;
+      var recipient = Players.findOne({username:recipientUsername});
+
+      if (username === recipientUsername) return;
+
+      var d = new Date();
+
+      var tagValue = $('input#addTagTag').val();
+      cacheTagValue = tagValue;
+      var existingTag = Tags.findOne({value:tagValue});
+
+      if (existingTag) {
+        $('#addTagModal .modal-body').html('<p> Are you sure? Tagging '+recipientUsername+' as '+tagValue+' will cost 10 points because '+tagValue+' is not a new tag</p>');
+
+        $('#addTagModal .modal-footer').html('<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button><button id="addNewTagConfirm" class="btn btn-primary">Ok</button>');
+
+        return;
+      }
+
+      // add a new tag
+      var newTag = {
+        value: tagValue,
+        owner: recipientUsername,
+        lastTaggedBy: username,
+        active: true,
+        timeRemaining:TIMETOTAG, //seconds
+        count: 1,
+        startTime: d.getTime()
+      };
+
+      Tags.insert(newTag);
+
+      // Add the tag to the recipients tags list for tag_breakdown
+      recipient.tags.push(tagValue);
+      Players.update({_id:recipient._id}, recipient);
+
+      //reset text
+      $('#input#addTagTag').val('Awesome');
+      $('input#addTagPlayer').val('Joe');
+
+      $('#addTagModal .modal-footer button.closeModal').click();
+    },
+    'click button#addNewTagConfirm' : function(e) {
+      $('#addTagModal .modal-body').html('Tag <input id="addTagPlayer" type="text" value="Joe"> as <input id="addTagTag" type="text" value="Awesome"><br><br><br><br><br><br><br>');
+
+      $('#addTagModal .modal-footer').html('<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button><button id="addNewTag" class="btn btn-primary">Tag</button>');
+
+      var username = Session.get('loggedInUser');
+      var sender = Players.findOne({username:username});
+
+      var recipient = Players.findOne({username:cacheRecipientUsername});
+
+      var existingTag = Tags.findOne({value:cacheTagValue});
+
+      // update existing tag
+      existingTag.active = true;
+      existingTag.owner = cacheRecipientUsername;
+      existingTag.lastTaggedBy = username;
+      existingTag.timeRemaining = TIMETOTAG; //seconds
+      existingTag.count = existingTag.count + 1;
+      existingTag.startTime = (new Date()).getTime();
+
+      Tags.update({_id:existingTag._id}, existingTag);
+
+      // subtract ten points from the sender
+      sender.score = sender.score - 10;
+      Players.update({_id:sender._id}, sender);
+
+      // Add the tag to the recipients tags list for tag_breakdown
+      recipient.tags.push(cacheTagValue);
+      Players.update({_id:recipient._id}, recipient);
+
+      //reset text
+      $('#input#addTagTag').val('Awesome');
+      $('input#addTagPlayer').val('Joe');
+
+      $('#addTagModal .modal-footer button.closeModal').click();
     }
   });
 
   Template.active_players.players = function() {
     var username = Session.get('loggedInUser');
     var player = Players.findOne({username:username});
-
     return Players.find({live:true, _id: {$ne:player._id}});
   };
 
@@ -265,28 +377,62 @@ if (Meteor.isClient) {
     return toReturn;
   };
 
+  // Ping the server to prove that the client is still alive
+  var pingIntervalId = Meteor.setInterval(function(){
+    var username = Session.get('loggedInUser');
+    var player = Players.findOne({username:username});
+    if (player){
+      var now = (new Date()).getTime();
+      player.last_ping = now;
+      Players.update({_id:player._id}, player);
+    }
+    else {
+      Meteor.clearInterval(pingIntervalId);
+    }
+  }, PINGSERVERINTERVAL*1000);
+
 }
 
 if (Meteor.isServer) {
+
   Meteor.startup(function () {
     if(Players.find().count() == 0) {
-      Players.insert({userId: "5995877324", username: "Rushan", open: true, live:false, score: 0, tags: []});
-      Players.insert({userId: "5995985639", username: "Nicolette", open: true, live:false, score: 0, tags: []});
-      Players.insert({userId: "5996265657", username: "Jennelle", open: true, live: false, score: 0, tags: []});
-      Players.insert({userId: "5995861086", username: "Joe", open: true, live:false, score: 0, tags: []});
-      Players.insert({userId: "5995496896", username: "Kevin", open: true, live:false, score: 0, tags: []});
-      Players.insert({userId: "6736003894", username: "Eric Y", open: true, live:false, score: 0, tags: []});
-      Players.insert({userId: "5453891178", username: "mpark", open: true, live:false, score: 0, tags: []});
+      Players.insert({userId: "5995861086", username: "Joe", open: true, live:false, last_ping:-1, score: 0, tags: []});
+      Players.insert({userId: "5995877324", username: "Rushan", open: true, live:false, last_ping:-1, score: 0, tags: []});
+      Players.insert({userId: "5995985639", username: "Nicolette", open: true, live:false, last_ping:-1, score: 0, tags: []});
+      Players.insert({userId: "5996265657", username: "Jennelle", open: true, live: false, last_ping:-1, score: 0, tags: []});
+      Players.insert({userId: "5995496896", username: "Kevin", open: true, live:false, last_ping:-1, score: 0, tags: []});
+      Players.insert({userId: "6736003894", username: "Eric Y", open: true, live:false, last_ping:-1, score: 0, tags: []});
+      Players.insert({userId: "5453891178", username: "mpark", open: true, live:false, last_ping:-1, score: 0, tags: []});
     
     }
     // if(Tags.find().count() == 0) {
     //   var d = new Date();
-    //   Tags.insert({ value: 'Cute', owner:'Red', active: true, timeRemaining:(TIMETOTAG+60), count: 1, startTime: d.getTime()});
-    //   Tags.insert({ value: 'Fun', owner:'Green', active: true, timeRemaining:(TIMETOTAG+60-3), count: 1, startTime: d.getTime()});
-    //   Tags.insert({ value: 'Silly', owner:'Orange', active: true, timeRemaining:(TIMETOTAG+60-6), count: 0, startTime: d.getTime()});
-    //   Tags.insert({ value: 'Awesome', owner:'Blue', active: true, timeRemaining:(TIMETOTAG+60-9), count: 0, startTime: d.getTime()});
+    //   Tags.insert({ value: 'Cute', owner:'Joe', active: true, timeRemaining:(TIMETOTAG), count: 1, startTime: d.getTime()});
+    //   Tags.insert({ value: 'Fun', owner:'Joe', active: true, timeRemaining:(TIMETOTAG-3), count: 1, startTime: d.getTime()});
+    //   Tags.insert({ value: 'Silly', owner:'Joe', active: true, timeRemaining:(TIMETOTAG-6), count: 0, startTime: d.getTime()});
+    //   Tags.insert({ value: 'Awesome', owner:'Joe', active: true, timeRemaining:(TIMETOTAG-9), count: 0, startTime: d.getTime()});
     // }
 
+    // Set interval to check for dead clients and reopen them
+    Meteor.setInterval(function(){
+      var now = (new Date()).getTime();
+      Players.find({
+        open:false,
+        live:true,
+        last_ping: {$lt: (now - CHECKFORDEADCLIENTSINTERVAL*1000)}
+      }).forEach(function(player){
+        player.open = true;
+        player.live = false;
+        Players.update({_id:player._id}, player);
+      });
+    }, CHECKFORDEADCLIENTSINTERVAL*1000);
+
+
+
+    // !!! this is not very optimized, but it seems to work for
+    // up to 1000 tags so probably ok for now.
+    // set the time remaining for each tag
     Meteor.setInterval(function(){
       Tags.find({active:true}).forEach(function(tag){
         if (!tag.active) return;
@@ -306,7 +452,10 @@ if (Meteor.isServer) {
           var d = new Date();
           tag.timeLasted = Math.round(100*((d.getTime() - tag.startTime)/(1000*60)))/100;
           tag.timeRemaining = -1;
-          ArchivedTags.insert(tag);
+          var aTag = ArchivedTags.findOne({_id:tag._id});
+          if (!aTag) {
+            ArchivedTags.insert(tag);
+          }
         }
         Tags.update({_id:tag._id}, tag);
       });
