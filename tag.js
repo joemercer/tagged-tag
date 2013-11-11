@@ -139,7 +139,7 @@ if (Meteor.isClient) {
 
       var username = Session.get('loggedInUser');
       var player = Players.findOne({username:username});
-      var typeaheadSource = ['apple', 'banana'];
+      var typeaheadSource = [];
       Players.find({live:true, _id: {$ne:player._id}}).forEach(function(player){
         typeaheadSource.push(player.username);
       });
@@ -236,6 +236,41 @@ if (Meteor.isClient) {
 
       $('#input#addTagTag').val('Awesome');
       $('input#addTagPlayer').val('Joe');
+    }
+  });
+
+  Template.stealTagModal.events({
+    'click input#stealTagTag': function(e){
+      $target = $(e.target);
+      $target.val('');
+
+      var username = Session.get('loggedInUser');
+      var player = Players.findOne({username:username});
+      var typeaheadSource = [];
+      Tags.find({owner: {$ne:player.username}}).forEach(function(tag){
+        typeaheadSource.push(tag.value);
+      });
+      $target.typeahead({
+        source: typeaheadSource
+      });
+    },
+    'click button#stealNewTag' : function(e){
+      var username = Session.get('loggedInUser');
+      var player = Players.findOne({username:username});
+
+      var tagValue = $('#stealTagModal .modal-body #stealTagTag').val();
+      var tag = Tags.findOne({value:tagValue});
+      if (!tag) return;
+
+      tag.active = true;
+      tag.lastTaggedBy = tag.owner;
+      tag.owner = username;
+      tag.timeRemaining = TIMETOTAG; //seconds
+      tag.count = tag.count + 1;
+
+      Tags.update({_id:tag._id}, tag);
+
+      $('#stealTagModal .modal-footer button.closeModal').click();
     }
   });
 

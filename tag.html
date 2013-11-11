@@ -83,7 +83,10 @@
 		Add a new Tag
 	</a>
 	{{> addTagModal}}
-	
+	<a href="#stealTagModal" id="openStealTagModal" role="button" class="btn" data-toggle="modal">
+		Steal a Tag
+	</a>
+	{{> stealTagModal}}
 </template>
 
 <template name="addTagModal">
@@ -99,6 +102,26 @@
 		<div class="modal-footer">
 			<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button>
 			<button id="addNewTag" class="btn btn-primary">Tag</button>
+		</div>
+	</div>
+</template>
+
+<template name="stealTagModal">
+	<div id="stealTagModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3>Steal a Tag</h3>
+		</div>
+		<div class="modal-body">
+			<p>
+				Beware, stealing a tag costs 10 points.
+			</p>
+			Steal <input id="stealTagTag" type="text" value="Awesome">
+			<br><br><br><br><br><br><br>
+		</div>
+		<div class="modal-footer">
+			<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button>
+			<button id="stealNewTag" class="btn btn-primary">Steal</button>
 		</div>
 	</div>
 </template>
