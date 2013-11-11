@@ -506,7 +506,8 @@ if (Meteor.isServer) {
 
           // decrement players score
           var player = Players.findOne({username:tag.owner});
-          player.score = player.score - tag.count;
+          var scoreDecrease = (tag.count > 5) ? 5 : tag.count;
+          player.score = player.score - scoreDecrease;
           Players.update({_id:player._id}, player);
 
           // archive the tag
