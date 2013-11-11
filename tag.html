@@ -75,7 +75,6 @@
 			{{> tag_toast_item}}
 		{{/each}}
 	</ul>
-	{{> addTagModal}}
 </template>
 
 <template name="tagActions">
@@ -83,6 +82,8 @@
 	<a href="#addTagModal" id="openAddTagModal" role="button" class="btn" data-toggle="modal">
 		Add a new Tag
 	</a>
+	{{> addTagModal}}
+	
 </template>
 
 <template name="addTagModal">
