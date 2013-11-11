@@ -30,7 +30,7 @@
 		</div>
 	{{else}}
 		<h2>
-			Click a picture to begin playing
+			Click a picture to begin playing on a guest account
 			<ul class="login_options inline unstyled">
 				{{#each options}}
 					{{> login_option}}
@@ -50,7 +50,6 @@
 <template name="login_option">
 	<li class="login_option" data-username="{{this.username}}">
 		<img src="http://www.tagged.com/imgsrv.php?sz=1&uid={{this.userId}}">
-			<div >{{this.username}}</div>
 		</img>
 	</li>
 </template>
@@ -76,10 +75,14 @@
 			{{> tag_toast_item}}
 		{{/each}}
 	</ul>
+	{{> addTagModal}}
+</template>
+
+<template name="tagActions">
+	<h2>Actions</h2>
 	<a href="#addTagModal" id="openAddTagModal" role="button" class="btn" data-toggle="modal">
 		Add a new Tag
 	</a>
-	{{> addTagModal}}
 </template>
 
 <template name="addTagModal">
@@ -115,6 +118,11 @@
 		<div class="row-fluid">
 			<div id="tag-toast" class="span12">
 				{{> tag_toast}}
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div id="tag-actions" class="span12">
+				{{> tagActions}}
 			</div>
 		</div>
 		<div class="row-fluid">

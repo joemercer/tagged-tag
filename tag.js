@@ -199,10 +199,6 @@ if (Meteor.isClient) {
       $('#addTagModal .modal-footer button.closeModal').click();
     },
     'click button#addNewTagConfirm' : function(e) {
-      $('#addTagModal .modal-body').html('Tag <input id="addTagPlayer" type="text" value="Joe"> as <input id="addTagTag" type="text" value="Awesome"><br><br><br><br><br><br><br>');
-
-      $('#addTagModal .modal-footer').html('<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button><button id="addNewTag" class="btn btn-primary">Tag</button>');
-
       var username = Session.get('loggedInUser');
       var sender = Players.findOne({username:username});
 
@@ -228,11 +224,16 @@ if (Meteor.isClient) {
       recipient.tags.push(cacheTagValue);
       Players.update({_id:recipient._id}, recipient);
 
+      // close the modal
+      $('#addTagModal .modal-footer button.closeModal').click();
+
       //reset text
+      $('#addTagModal .modal-body').html('Tag <input id="addTagPlayer" type="text" value="Joe"> as <input id="addTagTag" type="text" value="Awesome"><br><br><br><br><br><br><br>');
+
+      $('#addTagModal .modal-footer').html('<button class="btn closeModal" data-dismiss="modal" aria-hidden="true">Close</button><button id="addNewTag" class="btn btn-primary">Tag</button>');
+
       $('#input#addTagTag').val('Awesome');
       $('input#addTagPlayer').val('Joe');
-
-      $('#addTagModal .modal-footer button.closeModal').click();
     }
   });
 
