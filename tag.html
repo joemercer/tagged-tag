@@ -126,10 +126,10 @@
 			</div>
 		</div>
 		<div class="row-fluid">
-		  <div id="players" class="span4">
+		  <div id="players" class="span6">
 		  		{{> active_players}}
 		  </div>
-		  <div id="leaderboard" class="span8">
+		  <div id="leaderboard" class="span6">
 		  		{{> leaderboard}}
 		  </div>
 		</div>
@@ -138,7 +138,7 @@
 
 <template name="active_players">
 	<h2>Active Players</h2>
-	<ul class="unstyled">
+	<ul class="unstyled inline">
 		{{#each players}}
 			{{> active_player}}
 		{{/each}}
@@ -147,28 +147,21 @@
 
 <template name="active_player">
 	<li class="active-player" data-username="{{this.username}}">
-		<div class="row">
-			<div class="span6">
-				<div class="active-player-visual" style="background-image: url(http://www.tagged.com/imgsrv.php?sz=1&uid={{this.userId}})">
-			<div >{{this.name}}</div>
-				</div>
-			</div>
-			<div class="span6">
-				<div class="tagslist btn-group">
-				  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-				    Tag <span class="caret"></span>
-				  </button>
-				  <ul class="dropdown-menu" role="menu">
-				  	{{#each tags}}
-				  		{{> tag_item}}
-				  	{{/each}}
-				  	<li class="divider"></li>
-				  	<li id="newTag">
-				  		<input type="text" value="New tag">
-				  		<button class=".btn .btn-default">Tag</button>
-				  	</li>
-				  </ul>
-				</div>
+		<div class="active-player-visual" style="background-image: url(http://www.tagged.com/imgsrv.php?sz=1&uid={{this.userId}})">
+			<div class="tagslist btn-group">
+			  <button type="button" class="btn btn-default addTag dropdown-toggle" data-toggle="dropdown">
+			    Tag <span class="caret"></span>
+			  </button>
+				<ul class="tagOptions dropdown-menu" role="menu">
+					{{#each tags}}
+						{{> tag_item}}
+					{{/each}}
+					<li class="divider"></li>
+					<li id="newTag">
+						<input type="text" value="New tag">
+						<button class=".btn .btn-default">Tag</button>
+					</li>
+				</ul>
 			</div>
 		</div>
 	</li>
